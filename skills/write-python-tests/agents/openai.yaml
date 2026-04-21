@@ -1,4 +1,4 @@
 interface:
   display_name: "Write Python Tests"
-  short_description: "Write or refresh focused Python tests"
-  default_prompt: "Use $write-python-tests to refresh the Python test suite from source truth."
+  short_description: "Write comprehensive Python tests"
+  default_prompt: "Use $write-python-tests to add comprehensive behavior-focused coverage from the live Python source."
