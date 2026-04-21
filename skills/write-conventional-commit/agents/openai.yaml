@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Conventional Commit"
+  short_description: "Draft one commit message from staged diff"
+  default_prompt: "Use $write-conventional-commit to draft exactly one Conventional Commit message from the current staged diff."
