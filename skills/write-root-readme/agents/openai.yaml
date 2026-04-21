@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Root README"
+  short_description: "Rewrite a repo root README from source"
+  default_prompt: "Use $write-root-readme to rewrite the repo root README from current source and tooling."

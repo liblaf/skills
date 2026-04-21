@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync GitHub Repo Metadata"
+  short_description: "Preview and sync GitHub repo metadata"
+  default_prompt: "Use $sync-github-repo-metadata to propose GitHub description and topic updates."

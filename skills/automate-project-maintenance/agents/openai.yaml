@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automate Project Maintenance"
+  short_description: "Orchestrate repo maintenance skills"
+  default_prompt: "Use $automate-project-maintenance to refresh this repository with the applicable maintenance skills."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Python Tests"
+  short_description: "Write or refresh focused Python tests"
+  default_prompt: "Use $write-python-tests to refresh the Python test suite from source truth."
