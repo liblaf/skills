@@ -15,5 +15,5 @@ description: Write or rewrite the repo-root README.md.
 
 ## Validation
 
-- Run `rumdl fmt .`. Treat errors as weak hints.
+- Run `rumdl fmt .`. Treat its findings as weak hints, not strong constraints.
 - Spot-check commands, links, and tool names against the actual repo files before finishing.

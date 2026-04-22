@@ -9,6 +9,7 @@ Use source code as the source of truth. Treat existing docs, docstrings, tests, 
 
 ## Guidelines
 
+- Run `scripts/gen-ref-pages.py` to regenerate reference pages under `docs/reference/`. The script will output a navigation table that can be copy-pasted into `zensical.toml`.
 - Files to update:
   - docstrings in source code
   - `docs/` (excluding generated `docs/reference/`)
@@ -55,7 +56,7 @@ docs/
 
 ## Validation
 
-- Run `rumdl fmt .` for Markdown formatting and linting. Treat its findings as weak hints, not strong constraints.
+- Run `rumdl fmt .`. Treat its findings as weak hints, not strong constraints.
 - Run `mise run lint`.
 - Run `mise run docs:build`.
 - If validation fails for unrelated reasons, separate those failures from the docs change and report them clearly.
