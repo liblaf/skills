@@ -10,8 +10,13 @@ description: Write or rewrite the repo-root README.md.
 - files to update:
   - `README.md` in the repo root
 - Read [example-readme.md](./references/example-readme.md) for a reference structure and style.
+- Badges are encouraged.
 - Emojis are encouraged in headers.
-- Hero and badges are encouraged.
+- Hero section is encouraged.
+  - Use GitHub Socialify to generate a project image.
+  - Include link to docs if exists.
+  - Include a rule after hero section.
+- License section is encouraged.
 
 ## Validation
 
