@@ -10,10 +10,12 @@
 
 **[Explore the docs »](https://liblaf.github.io/grapes/)**
 
+<!-- large badge -->
 [![Built with Cloudflare](https://workers.cloudflare.com/built-with-cloudflare.svg)](https://cloudflare.com)
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/liblaf/grapes)
 [![Made with Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-black.json)](https://github.com/copier-org/copier)
 
+<!-- normal badges -->
 [![Bun](https://img.shields.io/badge/Bun-000000?logo=bun)](https://bun.sh)
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 [![Codecov](https://codecov.io/gh/liblaf/grapes/graph/badge.svg)](https://codecov.io/gh/liblaf/grapes)
@@ -25,6 +27,7 @@
 [![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/liblaf-grapes?logo=PyPI)](https://pypi.org/project/liblaf-grapes)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/liblaf-grapes?logo=Python)](https://pypi.org/project/liblaf-grapes)
+[![PyPI - Types](https://img.shields.io/pypi/types/liblaf-grapes?logo=PyPI)](https://pypi.org/project/liblaf-grapes)
 [![PyPI - Version](https://img.shields.io/pypi/v/liblaf-grapes?logo=PyPI)](https://pypi.org/project/liblaf-grapes)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Test](https://github.com/liblaf/grapes/actions/workflows/test.yaml/badge.svg)](https://github.com/liblaf/grapes/actions/workflows/test.yaml)

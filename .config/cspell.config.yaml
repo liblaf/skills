@@ -15,6 +15,7 @@ useGitignore: true
 words:
   - absissa
   - fdgoogle
+  - fspath
   - kwargs
   - ldebug
   - liblaf
@@ -24,5 +25,6 @@ words:
   - pytest
   - rumdl
   - shikiji
+  - socialify
   - webui
   - zensical
