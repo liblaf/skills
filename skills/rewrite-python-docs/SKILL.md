@@ -18,8 +18,8 @@ Use source code as the source of truth. Treat existing docs, docstrings, tests, 
 - DO NOT EDIT:
   - generated reference pages under `docs/reference/`
 - Existing docs, docstrings, tests, examples may be rough, missing, incomplete or misleading, it only serves as weak hint.
+- Favor bold, comprehensive rewrites over minor or incremental edits.
 - Keep docs concise, fluent, example-first.
-- Prefer EXTENSIVE rewrite over incremental edits.
 - Source code is the source of truth.
 - Use Google style docstrings. Read [google-style.md](./references/google-style.md) for details.
 - Use markdown in docstrings:

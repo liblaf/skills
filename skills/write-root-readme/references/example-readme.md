@@ -20,7 +20,7 @@
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
 [![Codecov](https://codecov.io/gh/liblaf/grapes/graph/badge.svg)](https://codecov.io/gh/liblaf/grapes)
 [![CodSpeed Badge](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/liblaf/grapes)
-[![MegaLinter](https://github.com/liblaf/grapes/actions/workflows/mega-linter.yaml/badge.svg)](https://github.com/liblaf/grapes/actions/workflows/mega-linter.yaml)
+[![MegaLinter](https://github.com/liblaf/grapes/actions/workflows/shared-mega-linter.yaml/badge.svg)](https://github.com/liblaf/grapes/actions/workflows/shared-mega-linter.yaml)
 [![NPM Downloads](https://img.shields.io/npm/dy/typescript?logo=npm)](https://www.npmjs.com/package/typescript)
 [![NPM Version](https://img.shields.io/npm/v/typescript?logo=npm)](https://www.npmjs.com/package/typescript)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/liblaf/grapes/main.svg)](https://results.pre-commit.ci/latest/github/liblaf/grapes/main)
@@ -30,7 +30,7 @@
 [![PyPI - Types](https://img.shields.io/pypi/types/liblaf-grapes?logo=PyPI)](https://pypi.org/project/liblaf-grapes)
 [![PyPI - Version](https://img.shields.io/pypi/v/liblaf-grapes?logo=PyPI)](https://pypi.org/project/liblaf-grapes)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Test](https://github.com/liblaf/grapes/actions/workflows/test.yaml/badge.svg)](https://github.com/liblaf/grapes/actions/workflows/test.yaml)
+[![Test](https://github.com/liblaf/grapes/actions/workflows/python-test.yaml/badge.svg)](https://github.com/liblaf/grapes/actions/workflows/python-test.yaml)
 [![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
