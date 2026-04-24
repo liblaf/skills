@@ -17,7 +17,7 @@ description: Write or rewrite the repo-root README.md.
 - Hero section is encouraged. Follow the format in example README strictly.
   - Use GitHub Socialify to generate a project image. The generated image already includes logo, title, description, badges for stars, forks, issues, pulls.
   - Include link to docs if exists.
-  - Badges in hero section are encouraged. Only exact badges in example README are allowed unless otherwise specified. Limit hero section to 8 badges.
+  - Badges in hero section are encouraged. Limit hero section to 8 badges.
   - Limit hero section to 4 links.
   - Include a rule after hero section.
 - License section is encouraged. Follow the format in example README strictly.
