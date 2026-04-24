@@ -39,7 +39,7 @@ Use exactly one type from this list:
 - If the change is breaking, mark it with `!` after the type or scope and include a `BREAKING CHANGE:` footer when additional migration detail is needed.
 - Keep the subject concise; aim for 50-72 characters.
 - Never include markdown fences, bullets, analysis, or commentary.
-- Prefer adding body when it materially improves clarity by explaining why or important impact.
+- Prefer a longer commit body after the short description, providing additional contextual information about the code changes.
 - Prefer lower-case after the colon unless a proper noun or acronym requires capitalization.
 - Preserve useful trailer/footer information from the context when it is clearly present.
 - Use an optional scope only when it is obvious and genuinely helpful.
