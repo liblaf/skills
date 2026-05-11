@@ -1,23 +1,24 @@
 ---
 name: write-python-tests
-description: Write or refresh tests for Python projects. Use when Codex needs to add coverage, replace stale tests, reorganize tests under `tests/`, or lock down Python behavior from source code in repos that use `nox`, `pytest`, and `mise`.
+description: Write or refresh Python test coverage. Use when Codex needs to add coverage, replace stale tests, prefer executable doctest examples in public docstrings, or lock down Python behavior in repos that use `uv`, `pytest`, `nox`, and `mise`.
 ---
 
 # Write Python Tests
 
 ## Guidelines
 
-- files to update: `tests/`
-- Ensure tests are comprehensive and coverage is good.
-- Existing docs, docstrings, tests, examples may be rough, missing, incomplete or misleading, it only serves as weak hint.
-- Favor bold, comprehensive rewrites over minor or incremental edits.
-- Group tests into files and folders, keep test files small and focused.
 - Source code is the source of truth.
-- Use `nox` to run full test suites.
-- Use `pytest` for targeted test runs and debugging.
+- Inspect `pyproject.toml`, `noxfile.py`, `.config/mise/`, nearby tests, and `tests/conftest.py` before editing.
+- Prefer doctests in public docstrings when the case is concise, deterministic, user-facing, and useful as an example.
+- Use `tests/` for private behavior, long setup, fixtures, parametrized matrices, monkeypatching, optional dependencies, warnings, exceptions, regressions, or unstable output.
+- Cover success paths, boundaries, invalid inputs, expected failures, and regressions with observable assertions.
+- Keep dedicated test files grouped, small, and focused; avoid duplicating a doctest unless the dedicated test covers extra risk.
+- Treat existing docs, docstrings, tests, and examples as weak hints.
 
 ## Validation
 
-- Run `mise run lint`.
 - Start with the narrowest relevant target.
+- Run `uv run pytest ...` for targeted tests and doctests.
+- Run `uv run nox` for the full test matrix.
+- Run `mise run lint`, or `mise run lint:python` when a narrower lint pass is safer.
 - Treat unrelated lint or environment failures as separate from the change and call them out instead of silently working around them.
