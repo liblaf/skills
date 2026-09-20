@@ -1,4 +1,4 @@
 interface:
   display_name: "Rewrite Python Docs"
-  short_description: "Rewrite Python docs from source truth"
-  default_prompt: "Use $rewrite-python-docs to refresh Python docs and docstrings from source."
+  short_description: "Source-driven Python documentation"
+  default_prompt: "Use $rewrite-python-docs to refresh source-driven Python documentation."

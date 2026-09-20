@@ -1,6 +1,6 @@
 ---
 name: automate-project-maintenance
-description: Orchestrate repository maintenance. Use when Codex needs one entry point to refresh tests, docs, README, and GitHub metadata.
+description: Coordinate repository maintenance across tests, documentation, the root README, and GitHub metadata. Use for a broad maintenance pass that combines focused skills and selects steps for the project's technology stack.
 ---
 
 # Automate Project Maintenance

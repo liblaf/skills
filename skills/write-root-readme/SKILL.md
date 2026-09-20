@@ -1,6 +1,6 @@
 ---
 name: write-root-readme
-description: Write or rewrite the repo-root README.md.
+description: Write or comprehensively rewrite a repository's root README.md with a concise project overview and verified commands, links, and tooling. Use when creating a project README or refreshing an outdated one.
 ---
 
 # Write Root README

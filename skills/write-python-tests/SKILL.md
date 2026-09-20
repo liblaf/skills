@@ -1,6 +1,6 @@
 ---
 name: write-python-tests
-description: Write or refresh Python test coverage. Use when Codex needs to add coverage, replace stale tests, prefer executable doctest examples in public docstrings, or lock down Python behavior in repos that use `uv`, `pytest`, `nox`, and `mise`.
+description: Add or update Python behavior tests and suitable public-API doctests in projects using uv, pytest, nox, and mise.
 ---
 
 # Write Python Tests

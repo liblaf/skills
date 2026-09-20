@@ -1,21 +1,20 @@
 ---
 name: write-conventional-commit
-description: Generate exactly one high-quality Conventional Commit message from the current Git diff. Use when Codex needs to inspect staged changes, summarize the dominant intent, and return only the final commit message with no analysis or extra text.
+description: Draft one Conventional Commit message that summarizes the dominant intent of Git changes. Use when asked to write a commit message from staged changes, or from unstaged changes when nothing is staged.
 ---
 
 # Write Conventional Commit
 
-Inspect Git changes and return exactly one final commit message.
+Inspect Git changes and write Conventional Commit message.
 
 ## Workflow
 
 - Run `git status --short`.
-- If there are no staged or unstaged changes, reply exactly: `No staged or unstaged changes found.`
+- If there are no staged or unstaged changes, reply: `No staged or unstaged changes found.`
 - Run `git diff --staged --no-ext-diff --stat`.
 - Run `git diff --staged --no-ext-diff`.
 - If the staged diff is empty but the working tree is dirty, use `git diff --no-ext-diff --stat` and `git diff --no-ext-diff` as a fallback.
 - Infer the dominant intent from the diff and write one message only.
-- Return exactly one final commit message and nothing else.
 
 ## Commit Types
 

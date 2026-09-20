@@ -1,6 +1,6 @@
 ---
 name: sync-github-repo-metadata
-description: Inspect a repository and propose or apply GitHub About metadata updates. Use when Codex needs to infer a concise repository description and topic set from source code, package metadata, docs config, or the current README, then preview and optionally run `gh repo edit`.
+description: Review and update a repository's GitHub About description and topics using local code and configuration. Use when asked to refresh GitHub metadata, preview proposed changes, or apply confirmed description and topic updates.
 ---
 
 # Sync GitHub Repo Metadata

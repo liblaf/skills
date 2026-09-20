@@ -1,4 +1,4 @@
 interface:
-  display_name: "Automate Project Maintenance"
-  short_description: "Orchestrate repo maintenance skills"
-  default_prompt: "Use $automate-project-maintenance to refresh this repository with the applicable maintenance skills."
+  display_name: "Maintain Repository"
+  short_description: "Coordinate tests, docs, README, and GitHub metadata"
+  default_prompt: "Use $automate-project-maintenance to refresh this repository with the maintenance steps appropriate to its technology stack."

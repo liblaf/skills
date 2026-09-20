@@ -1,6 +1,6 @@
 ---
 name: rewrite-python-docs
-description: Rewrite Python docs and docstrings from source code. Use when Codex needs to refresh docs, add executable doctest examples, update Google-style docstrings, or regenerate zensical/mkdocstrings reference pages.
+description: Rewrite Python documentation and docstrings from source, with deterministic doctests and regenerated Zensical/mkdocstrings reference pages.
 ---
 
 # Rewrite Python Docs
