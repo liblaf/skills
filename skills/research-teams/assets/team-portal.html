@@ -32,7 +32,7 @@
     </nav>
     <section class="overview" aria-label="团队概况">
       <div class="metric"><span class="metric-label">已完成 / 全部任务</span><span id="metric-completed" class="metric-value">—</span></div>
-      <div class="metric"><span class="metric-label">进行中</span><span id="metric-active" class="metric-value">—</span></div>
+      <div class="metric"><span class="metric-label">未解决</span><span id="metric-unresolved" class="metric-value">—</span></div>
       <div class="metric accent"><span class="metric-label">存在阻碍</span><span id="metric-blocked" class="metric-value">—</span></div>
       <div class="metric accent"><span class="metric-label">未读消息</span><span id="metric-unread" class="metric-value">—</span></div>
     </section>
@@ -54,6 +54,7 @@
       const byId = id => document.getElementById(id);
       const preview = Object.prototype.hasOwnProperty.call(window, 'TEAM_PORTAL_SNAPSHOT');
       const statusNames = {pending:'待开始',in_progress:'进行中',completed:'已完成'};
+      const problemNames = {unresolved:'未解决',resolved:'已解决',not_applicable:'不适用'};
       let state = null, stream = null, activeTab = 'tasks', filter = 'all', selectedId = null, loading = false, initialTaskLink = true;
       const pending = new Set(), expanded = new Set(), openReports = new Map();
       function readable(value, fallback = '未提供') {
@@ -202,9 +203,9 @@
           card.id = 'task-' + taskId;
           heading.append(el('span','task-id',readable(task.id,'—')),el('h3','',readable(task.title,'未命名任务')));
           const badges = el('div','task-badges');
-          if (unresolved(task)) badges.append(badge('未解决','issue'));
-          if (!(unresolved(task) && task.status === 'completed')) badges.append(badge(statusNames[task.status] || '任务状态待确认','in_progress' === task.status ? 'active' : completed(task) ? 'done' : 'pending'));
-          if (task.execution_state) badges.append(badge(executionLabel(task.execution_state)));
+          const problemLabel = problemNames[task.problem_status];
+          badges.append(badge(problemLabel || (unresolved(task) ? '未解决' : statusNames[task.status] || '任务状态待确认'),unresolved(task) ? 'issue' : completed(task) ? 'done' : 'pending'));
+          if (unresolved(task) && task.execution_state) badges.append(badge(executionLabel(task.execution_state)));
           top.append(heading,badges);
           card.append(top);
           const goal = task.report?.goal || task.question;
@@ -282,7 +283,7 @@
         byId('tasks-count').textContent = String(tasks.length); byId('inbox-count').textContent = String(unread);
         byId('inbox-count').setAttribute('aria-label',unread + ' 条未读消息');
         byId('metric-completed').textContent = tasks.filter(completed).length + ' / ' + tasks.length;
-        byId('metric-active').textContent = String(tasks.filter(item => item.status === 'in_progress').length);
+        byId('metric-unresolved').textContent = String(tasks.filter(item => item.problem_status === 'unresolved').length);
         byId('metric-blocked').textContent = String(tasks.filter(item => item.blocker && readable(item.blocker,'').trim()).length);
         byId('metric-unread').textContent = String(unread);
         setTime('updated-at','来源更新时间：',state.updated_at); setTime('evidence-checked-at','证据核对时间：',state.evidence_checked_at); setTime('receipts-at','阅读状态更新时间：',state._portal?.receipts_updated_at);
