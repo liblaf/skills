@@ -13,7 +13,7 @@
     @media(min-width:1500px){.shell{padding-top:48px}}@media(max-width:1000px){.shell{padding:28px 26px 22px}.metric{padding:17px 19px}.task-grid{column-gap:20px;grid-template-columns:.8fr 1.1fr 1.5fr}.connection{min-width:220px}.mail-layout{grid-template-columns:minmax(250px,.85fr) minmax(0,1.5fr)}.reader{padding:23px}.connection-detail{max-width:260px}}
     @media(max-width:740px){.shell{padding:25px 18px 20px}.masthead{display:block}.connection{text-align:left;padding-top:20px;min-width:0}.connection-top{justify-content:flex-start}.connection-detail{margin-left:0;max-width:none}.subtitle{font-size:13px}.tabs{margin-top:22px}.overview{grid-template-columns:repeat(2,1fr);margin:20px 0 26px}.metric{padding:14px 17px}.metric-value{font-size:25px}.section-heading{align-items:flex-start;flex-direction:column;gap:10px}.source-stamp{text-align:left}.task{padding:18px}.task-heading{display:block}.task-id{display:block;margin-bottom:3px}.task-grid{grid-template-columns:1fr 1fr;gap:15px 20px}.field.next,.acceptance{grid-column:1 / -1}.task-grid .field.blocker{grid-column:1 / -1}.task-top{gap:12px}.mail-layout{grid-template-columns:1fr}.mail-list{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.reader{padding:22px 19px;min-height:0}.reader h2{font-size:21px}.footer{display:block}.footer p+p{margin-top:6px}.notice{font-size:13px}.filters{gap:3px}.filter{padding:6px 12px}}
     @media(prefers-reduced-motion:no-preference){button,a{transition:background-color .12s,border-color .12s}}
-    .task-detail{margin-top:16px}.task-detail>summary{font-size:13px;color:var(--green);cursor:pointer}.task-detail[open]>summary{padding-bottom:3px}
+    .task-detail{margin-top:16px}.task-detail>summary{font-size:14px;font-weight:600;color:var(--green);cursor:pointer;width:fit-content}.task-detail[open]>summary{padding-bottom:3px}.task-badges{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.report{margin-top:23px;max-width:960px}.report-header{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}.report-header h4{font-size:18px;margin:0}.report-link{font-size:12px}.report-section{margin-top:24px}.report-section h5,.report-figures>h5,.report-evidence>h5,.phases>h5{font-size:15px;font-weight:650;margin:0 0 9px}.report-prose p{margin:0 0 13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.95}.report-prose p:last-child{margin-bottom:0}.report-missing{padding:17px 19px;border:1px dashed var(--line);border-radius:6px;color:var(--muted)}.report-times{font-size:12px;color:var(--muted);margin-top:22px;display:flex;gap:5px 22px;flex-wrap:wrap}.report-evidence,.report-figures,.phases{border-top:1px solid var(--line);padding-top:21px;margin-top:25px}.report-figure{margin:21px 0 0;min-width:0}.report-figure h6{font-size:14px;margin:0 0 10px}.report-figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}.report-figure iframe{display:block;width:100%;height:550px;max-height:75vh;min-height:300px;border:1px solid var(--line);border-radius:6px;background:#fff}.report-figure figcaption{font-size:13px;color:var(--muted);margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere}.figure-open{display:inline-block;font-size:13px;margin-top:9px}.figure-unavailable{font-size:13px;color:var(--muted);padding:12px 15px;background:#f5f4ee;border-radius:5px;white-space:pre-wrap}.phase{border-left:2px solid #cbd5c5;padding:0 0 0 17px;margin-top:22px}.phase-heading{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:9px}.phase-heading h6{font-size:14px;margin:0}.phase .evidence-list{margin-top:12px}.task-context{border-top:1px solid var(--line);margin-top:26px;padding-top:4px}.task-context h4{font-size:14px;margin:16px 0 0}.report-note{font-size:13px;color:var(--muted);margin:4px 0 16px}
     @media print{body{background:white}.shell{padding:0}.connection button,.tabs,.filters,.read-control button{display:none}.overview,.task,.reader{box-shadow:none;break-inside:avoid}.mail-layout{grid-template-columns:1fr}.mail-list{display:none}.footer{margin-top:20px}}
   </style>
 </head>
@@ -54,8 +54,8 @@
       const byId = id => document.getElementById(id);
       const preview = Object.prototype.hasOwnProperty.call(window, 'TEAM_PORTAL_SNAPSHOT');
       const statusNames = {pending:'待开始',in_progress:'进行中',completed:'已完成'};
-      let state = null, stream = null, activeTab = 'tasks', filter = 'all', selectedId = null, loading = false;
-      const pending = new Set(), expanded = new Set();
+      let state = null, stream = null, activeTab = 'tasks', filter = 'all', selectedId = null, loading = false, initialTaskLink = true;
+      const pending = new Set(), expanded = new Set(), openReports = new Map();
       function readable(value, fallback = '未提供') {
         if (value === null || value === undefined || value === '') return fallback;
         if (Array.isArray(value)) return value.length ? value.map(item => readable(item, '—')).join('\n') : fallback;
@@ -88,9 +88,9 @@
       function safeUrl(raw) {
         if (typeof raw !== 'string') return null;
         try {
-          if (raw.startsWith('/artifacts/')) {
+          if (raw.startsWith('/artifacts/') || raw.startsWith('/figures/')) {
             const url = new URL(raw, location.origin);
-            return url.origin === location.origin && url.pathname.startsWith('/artifacts/') ? url.href : null;
+            return url.origin === location.origin && (url.pathname.startsWith('/artifacts/') || url.pathname.startsWith('/figures/')) ? url.href : null;
           }
           const url = new URL(raw);
           return ['http:', 'https:', 't3-thread:'].includes(url.protocol) ? url.href : null;
@@ -116,26 +116,112 @@
         node.append(el('dt','',label),el('dd','',readable(value,fallback)));
         return node;
       }
+      function unresolved(task) {
+        return task.problem_status === 'unresolved' || (!['resolved','not_applicable'].includes(task.problem_status) && Boolean(task.unresolved));
+      }
+      function completed(task) { return task.status === 'completed' && !unresolved(task); }
+      function linkedTaskId() {
+        const match = /^#task=(.*)$/.exec(location.hash);
+        if (!match) return null;
+        try { return decodeURIComponent(match[1]); } catch (_) { return null; }
+      }
+      function prose(value, fallback = '未提供') {
+        const node = el('div','report-prose');
+        readable(value,fallback).split(/\n\s*\n/).forEach(paragraph => node.append(el('p','',paragraph)));
+        return node;
+      }
+      function executionLabel(value) {
+        const labels = {closed:'执行已结束',closed_gate_failed:'按门槛停止',waiting_next_step:'待下一步',paused:'已暂停',blocked:'数据或许可卡住',running:'正在执行',active:'正在执行',in_progress:'推进中',pending:'待开始',idle:'等待安排',waiting_human:'等待人参与',waiting_data:'等待数据',completed:'执行已结束'};
+        if (typeof value === 'string' && value.startsWith('blocked_')) return '数据或许可卡住';
+        if (typeof value === 'string' && value.startsWith('paused_')) return '已暂停';
+        if (typeof value === 'string' && value.startsWith('waiting_') && !labels[value]) return '待下一步';
+        return labels[value] || (value ? '执行情况待确认（' + readable(value) + '）' : '执行情况未提供');
+      }
+      function renderFigures(figures) {
+        const section = el('section','report-figures'); section.append(el('h5','','图表与可视化'));
+        figures.forEach((figure,index) => {
+          if (!figure || typeof figure !== 'object') return;
+          const node = el('figure','report-figure'), label = readable(figure.label,'图表 ' + (index + 1)), url = safeUrl(figure.url);
+          node.append(el('h6','',label));
+          if (figure.available !== true || !url) node.append(el('p','figure-unavailable',readable(figure.availability_note,'图表暂不可用。')));
+          else {
+            const parsed = new URL(url), registered = parsed.origin === location.origin && parsed.pathname.startsWith('/figures/');
+            const embeddable = ['http:','https:'].includes(parsed.protocol) && (registered || figure.embed_safe === true);
+            if (embeddable && figure.kind === 'image') {
+              const picture = el('img'); picture.src = url; picture.alt = readable(figure.caption,label); picture.loading = 'lazy'; node.append(picture);
+            } else if (embeddable && figure.kind === 'html') {
+              const frame = el('iframe'); frame.src = url; frame.title = label + '：交互可视化'; frame.loading = 'lazy'; frame.setAttribute('sandbox','allow-scripts'); frame.referrerPolicy = 'no-referrer'; node.append(frame);
+            }
+            const link = el('a','figure-open','打开图表：' + label); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; node.append(link);
+          }
+          if (figure.caption) node.append(el('figcaption','',readable(figure.caption)));
+          section.append(node);
+        });
+        return section;
+      }
+      function renderReport(task) {
+        const section = el('section','report'), header = el('div','report-header');
+        const link = el('a','report-link','此任务的固定链接'); link.href = '#task=' + encodeURIComponent(String(task.id));
+        header.append(el('h4','','任务完整汇报'),link); section.append(header);
+        const report = task.report && typeof task.report === 'object' && !Array.isArray(task.report) ? task.report : null;
+        if (!report) section.append(el('p','report-missing','报告尚未发布'));
+        else {
+          [['本来要解决什么','goal'],['做了什么','work_done'],['结果怎样','result'],['还缺什么','remaining'],['下一步','next_step']].forEach(([label,key]) => {
+            const part = el('section','report-section'); part.append(el('h5','',label),prose(report[key])); section.append(part);
+          });
+        }
+        const figures = Array.isArray(report?.figures) ? report.figures : Array.isArray(task.figures) ? task.figures : [];
+        if (figures.length) section.append(renderFigures(figures));
+        if (Array.isArray(task.phases) && task.phases.length) {
+          const phases = el('section','phases'); phases.append(el('h5','','阶段成果'),el('p','report-note','阶段完成情况单独记录；原任务是否完成见任务状态。'));
+          task.phases.forEach(phase => {
+            if (!phase || typeof phase !== 'object') return;
+            const part = el('section','phase'), title = el('div','phase-heading');
+            title.append(el('h6','',[phase.id,phase.title].filter(Boolean).map(value => readable(value)).join(' · ') || '未命名阶段'),badge(phase.status === 'completed' ? '阶段已完成' : statusNames[phase.status] || '阶段状态待确认',phase.status === 'completed' ? 'done' : 'pending'));
+            part.append(title,prose(phase.result,'阶段结果尚未发布。'));
+            if (phase.evidence) part.append(evidenceList(phase.evidence));
+            phases.append(part);
+          });
+          section.append(phases);
+        }
+        if (report) {
+          const evidence = el('section','report-evidence'); evidence.append(el('h5','','汇报依据'),evidenceList(report.evidence || task.evidence)); section.append(evidence);
+          const times = el('div','report-times');
+          times.append(el('span','','报告更新：' + stamp(report.updated_at)),el('span','','证据核对：' + stamp(report.evidence_checked_at || task.evidence_checked_at)));
+          section.append(times);
+        }
+        return section;
+      }
       function renderTasks(tasks) {
-        const list = byId('task-list'); list.replaceChildren();
+        const list = byId('task-list');
+        list.querySelectorAll('.task-detail').forEach(detail => openReports.set(detail.dataset.taskId,detail.open));
+        list.replaceChildren();
         if (!tasks.length) { list.append(empty('暂无任务','团队任务将在这里显示。')); return; }
         tasks.forEach(task => {
-          const card = el('article','task'), top = el('div','task-top'), heading = el('div','task-heading');
+          const taskId = String(task.id), card = el('article','task'), top = el('div','task-top'), heading = el('div','task-heading');
+          card.id = 'task-' + taskId;
           heading.append(el('span','task-id',readable(task.id,'—')),el('h3','',readable(task.title,'未命名任务')));
-          top.append(heading,badge(statusNames[task.status] || readable(task.status),'in_progress' === task.status ? 'active' : task.status === 'completed' ? 'done' : 'pending'));
+          const badges = el('div','task-badges');
+          if (unresolved(task)) badges.append(badge('未解决','issue'));
+          if (!(unresolved(task) && task.status === 'completed')) badges.append(badge(statusNames[task.status] || '任务状态待确认','in_progress' === task.status ? 'active' : completed(task) ? 'done' : 'pending'));
+          if (task.execution_state) badges.append(badge(executionLabel(task.execution_state)));
+          top.append(heading,badges);
           card.append(top);
-          if (task.question) card.append(el('p','question',readable(task.question)));
-          if (task.unresolved) card.append(el('p','question','仍未解决：' + readable(task.unresolved)));
+          const goal = task.report?.goal || task.question;
+          if (goal) card.append(el('p','question',readable(goal)));
+          if (!task.report && unresolved(task) && task.unresolved) card.append(el('p','question','仍未解决：' + readable(task.unresolved)));
           const detail = el('details','task-detail');
-          detail.open = task.status !== 'completed';
-          detail.append(el('summary','',task.status === 'completed' ? '查看本轮交付与验收' : '当前责任与推进条件'));
+          detail.dataset.taskId = taskId;
+          detail.open = openReports.get(taskId) === true;
+          detail.append(el('summary','','查看完整汇报'),renderReport(task));
+          detail.addEventListener('toggle', () => { if (detail.isConnected) openReports.set(taskId,detail.open); });
+          const context = el('details','task-context evidence'); context.append(el('summary','','责任与推进条件'));
           const grid = el('dl','task-grid');
-          const executionNames = {closed:'本轮已结束',closed_gate_failed:'已按门槛停止',blocked_human_license:'等待人类账号或许可'};
-          grid.append(field('负责人',task.owner === 'lead' ? 'team lead' : task.owner),field('执行情况',executionNames[task.execution_state] || task.execution_state),field('下一步',task.next_action,'next'),field('当前阻碍',task.blocker,task.blocker ? 'blocker' : '', '未报告阻碍'),field('验收标准',task.acceptance,'acceptance'));
-          if (task.completed_delivery) grid.append(field('本轮已交付',task.completed_delivery,'acceptance'));
-          if (task.unresolved) grid.append(field('仍未解决',task.unresolved,'acceptance'));
+          grid.append(field('负责人',task.owner === 'lead' ? '团队负责人' : task.owner),field('执行情况',executionLabel(task.execution_state)),field('下一步',task.next_action,'next'),field('当前阻碍',task.blocker,task.blocker ? 'blocker' : '', '未报告阻碍'),field('验收标准',task.acceptance,'acceptance'));
+          if (task.completed_delivery) grid.append(field('已交付成果',task.completed_delivery,'acceptance'));
+          if (task.unresolved) grid.append(field(unresolved(task) ? '仍未解决' : '补充说明',task.unresolved,'acceptance'));
           if (task.budget && task.budget.remaining_dispatch !== undefined) grid.append(field('后续计算额度',task.budget.remaining_dispatch));
-          detail.append(grid);
+          context.append(grid); detail.append(context);
           const details = el('details','evidence'); details.open = expanded.has(String(task.id));
           const count = Array.isArray(task.evidence) ? task.evidence.length : task.evidence ? 1 : 0;
           details.append(el('summary','', '证据与记录（' + count + '）'),evidenceList(task.evidence));
@@ -165,7 +251,10 @@
         const message = messages.find(item => String(item.id) === selectedId), article = el('article','reader');
         const top = el('div','reader-top'), badges = el('div','reader-badges');
         badges.append(badge(message.read_status === 'read' ? '共享状态：已读' : '共享状态：未读',message.read_status === 'read' ? 'read' : 'unread'));
-        if (message.delivery_status) badges.append(badge('投递：' + readable(message.delivery_status)));
+        if (message.delivery_status) {
+          const deliveryNames = {delivered:'已送达',sent:'已发送',pending:'待投递',failed:'投递失败',blocked:'投递受阻',not_sent:'尚未发送',queued:'等待投递',recorded:'已记录',recorded_only:'仅在此记录',not_requested:'未请求投递',portal_only:'仅在工作台展示'};
+          badges.append(badge('投递：' + (deliveryNames[message.delivery_status] || '状态待确认（' + readable(message.delivery_status) + '）')));
+        }
         top.append(badges); article.append(top,el('h2','',readable(message.title,'未命名消息')));
         const byline = el('div','mail-byline'); byline.append(el('span','', '来自 ' + readable(message.from,'未提供')),el('span','', '发送于 ' + stamp(message.created_at))); article.append(byline);
         article.append(block('这件事的影响',message.significance));
@@ -192,7 +281,7 @@
         const tasks = state.tasks, unread = state.inbox.filter(item => item.read_status !== 'read').length;
         byId('tasks-count').textContent = String(tasks.length); byId('inbox-count').textContent = String(unread);
         byId('inbox-count').setAttribute('aria-label',unread + ' 条未读消息');
-        byId('metric-completed').textContent = tasks.filter(item => item.status === 'completed').length + ' / ' + tasks.length;
+        byId('metric-completed').textContent = tasks.filter(completed).length + ' / ' + tasks.length;
         byId('metric-active').textContent = String(tasks.filter(item => item.status === 'in_progress').length);
         byId('metric-blocked').textContent = String(tasks.filter(item => item.blocker && readable(item.blocker,'').trim()).length);
         byId('metric-unread').textContent = String(unread);
@@ -201,6 +290,7 @@
         byId('source-notice').textContent = sourceError ? '来源状态异常，当前展示保留的快照：' + readable(sourceError) : '';
         byId('source-notice').hidden = !sourceError;
         renderTasks(tasks); renderInbox();
+        if (initialTaskLink) { initialTaskLink = false; openLinkedTask(); }
       }
       function closeStream() { if (stream) { stream.close(); stream = null; } }
       function connect() {
@@ -247,10 +337,18 @@
         ['tasks','inbox'].forEach(key => { const button = byId(key + '-tab'); button.setAttribute('aria-selected',String(key === name)); button.tabIndex = key === name ? 0 : -1; byId(key + '-panel').hidden = key !== name; });
         if (focus) byId(name + '-tab').focus();
       }
+      function openLinkedTask() {
+        const id = linkedTaskId();
+        if (id === null) return;
+        openReports.set(id,true);
+        const card = byId('task-' + id), detail = card?.querySelector('.task-detail');
+        if (detail) { selectTab('tasks'); detail.open = true; card.scrollIntoView({block:'start'}); }
+      }
       ['tasks','inbox'].forEach(key => { const button = byId(key + '-tab'); button.addEventListener('click', () => selectTab(key)); button.addEventListener('keydown',event => { if (['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) { event.preventDefault(); selectTab(event.key === 'Home' ? 'tasks' : event.key === 'End' ? 'inbox' : activeTab === 'tasks' ? 'inbox' : 'tasks',true); } }); });
       document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; renderInbox(); }));
       byId('refresh').addEventListener('click',refresh);
       window.addEventListener('pagehide',closeStream);
+      window.addEventListener('hashchange',openLinkedTask);
       if (preview) {
         byId('preview-notice').hidden = false; byId('refresh').disabled = true;
         connection('静态预览','','展示嵌入的来源快照；操作请打开共享网页。');

@@ -19,7 +19,29 @@ The lead owns one UTF-8 `team-state.json`. Required fields:
 }
 ```
 
-Tasks use `id`, `title`, `question`, `owner`, `status`, `execution_state`, `blocker`, `next_action`, `acceptance`, and `evidence`. Add `completed_delivery` and `unresolved` to distinguish a finished diagnostic from an answered scientific question. Inbox entries use `id`, `created_at`, `from`, `title`, `summary`, `significance`, `decision_needed`, `evidence`, `delivery_status`, and `read_status`. Evidence entries contain `label` and `url`.
+Tasks use `id`, `title`, `question`, `owner`, `status`, `execution_state`, `blocker`, `next_action`, `acceptance`, and `evidence`. Use `problem_status` for the original goal and `phases` for finished stages, as described below. Inbox entries use `id`, `created_at`, `from`, `title`, `summary`, `significance`, `decision_needed`, `evidence`, `delivery_status`, and `read_status`. Evidence entries contain `label` and `url`.
+
+## Full task reports
+
+Each task can carry `report`, containing nonempty plain-language paragraphs `goal`, `work_done`, `result`, `remaining`, and `next_step`, plus `figures`, `evidence`, `updated_at`, and `evidence_checked_at`. The webpage exposes the full report directly under **查看完整汇报** and supports links such as `/#task=example%3AT-001`. A missing report is explicitly shown as unpublished.
+
+Set `problem_status` to `unresolved`, `resolved`, or `not_applicable`. An unresolved original goal cannot have top-level `status=completed`; the publish gateway rejects that combination. Use `phases` for finished investigations, each with `id`, `title`, `status`, `result`, and `evidence`. A completed phase does not complete its parent problem.
+
+Use this figure contract, preferably under `report.figures` (`task.figures` is also accepted):
+
+```json
+{
+  "label": "保存的三维结果",
+  "url": "/selected/view.html",
+  "caption": "说明对应试验、单位和该看什么。",
+  "kind": "html",
+  "assets": [{"name": "assets/view.js", "url": "/selected/view.js"}]
+}
+```
+
+`kind` is `image` or `html`. Omit `assets` for a self-contained file. Only explicitly named assets are exposed; their `name` is the exact relative resource path used by the HTML, without absolute paths or `..`. Declare any necessary external HTTPS dependency explicitly. Content files are served unchanged. HTML runs in an opaque-origin sandbox with scripts allowed and same-origin privileges withheld. Opening a figure cannot access the portal's read-state API.
+
+Add each selected file outside the existing evidence roots using repeated `--artifact-file /selected/file` arguments, including every required local asset. This does not expose its containing directory. Missing or unapproved assets are reported as unavailable instead of displaying a broken figure as a successful result.
 
 Before enabling live write operations, the data owner must accept this contract:
 

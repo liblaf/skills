@@ -46,7 +46,7 @@ These records preserve state. Use supported message, follow-up, resume, or compl
 - Publish a stable, direct link to the human-readable Task List at setup and handoff. Show readable progress, blockers, next actions, and evidence links so the human can inspect it without requesting a status report. Record when the view changed and when its evidence was checked; do not refresh timestamps to imply new progress.
 - Use `pending` for unstarted work, `in_progress` for started work, and `completed` after acceptance. Record blockers and human pauses separately so `in_progress` does not imply an active worker. Keep tasks small enough to produce an interpretable result and preserve the original scientific question.
 - Assign an owner before execution. Self-claiming is limited to ready tasks within the authorized scope, using an atomic claim facility or lead confirmation to prevent duplicate execution.
-- Teammates report results and evidence. The lead checks acceptance, marks completion, integrates the result, and releases dependent work. A finished turn or idle agent does not establish task completion.
+- Teammates report results and evidence. The lead checks the original promised goal before marking completion. A finished experiment is a completed phase; an unresolved original problem remains `pending` or `in_progress`, with its blocker or next action visible. Store phase results separately rather than relabeling the original goal as complete. A finished turn or idle agent does not establish task completion.
 - Continue ready, authorized work without waiting for human acknowledgement. Status questions and intermediate deliveries do not pause execution. When an assigned task finishes, take the next ready assignment or return its outcome to the lead.
 
 Before yielding with unfinished work, identify the next executor or the blocker, its resolution owner, and the event that will resume work. Register a supported completion notification before waiting for background work. If automatic resumption is unavailable, record the required human action or next-session resumption explicitly. On a completion or failure notification, the lead reconciles the Task List and advances remaining work; blocked work stays explicitly unfinished.
@@ -79,6 +79,8 @@ Assign one assistant to each human-facing delivery. The overview assistant track
 Report important developments promptly and consolidate routine progress into coherent updates. Request a human response when a decision or missing input is necessary; otherwise continue authorized work. Do not require acknowledgement merely to keep the team working.
 
 Write for a reader without the agents' conversation history: explain the question, main result, why it matters, decisive evidence and material limitations, and the next action or decision. Use a few meaningful comparisons with units and baselines. Distinguish observations, interpretations, proposals, and adopted decisions. Link artifacts as supporting evidence after explaining their significance. Scale the explanation to the update rather than repeating a fixed template.
+
+For each tracked task, maintain a readable report in the shared view: what the original goal was, what was done, what the results show, what remains, and what happens next. Write ordinary language; explain technical terms when they are needed. A status line or repository path is not the report. Use selected figures and captions to explain the result.
 
 ## Visual communication
 

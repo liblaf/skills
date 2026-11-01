@@ -23,11 +23,22 @@ import threading
 from http import cookies
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import quote, unquote, urlsplit
 
 
 def now() -> str:
     return dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
+
+
+def goal_unresolved(task: dict) -> bool:
+    problem = task.get("problem_status")
+    return problem == "unresolved" or (
+        problem not in ("resolved", "not_applicable")
+        and (
+            task.get("scientific_question_resolved") is False
+            or bool(task.get("unresolved"))
+        )
+    )
 
 
 def atomic_write(path: Path, content: str) -> None:
@@ -52,14 +63,19 @@ def read_json(path: Path) -> dict:
 
 
 class TeamStore:
-    def __init__(self, source: Path, artifact_roots=(), render_command=()):
+    def __init__(
+        self, source: Path, artifact_roots=(), render_command=(), artifact_files=()
+    ):
         self.source = source.resolve()
         self.lock_path = self.source.with_name(".team-state.lock")
         self.render_command = tuple(render_command)
         self.render_error = None
         self.roots = [self.source.parent, *(Path(p).resolve() for p in artifact_roots)]
+        self.files = {Path(p).resolve() for p in artifact_files}
         self.lock = threading.RLock()
         self.artifacts: dict[str, Path] = {}
+        self.figures: dict[str, dict[str, Path]] = {}
+        self.figure_dependencies: dict[str, list[str]] = {}
         self.last_good = None
 
     @staticmethod
@@ -86,6 +102,31 @@ class TeamStore:
         for item in data["inbox"]:
             if item.get("read_status", "unread") not in ("read", "unread"):
                 raise ValueError("Invalid read_status")
+        for task in data["tasks"]:
+            problem = task.get("problem_status")
+            if problem is not None and problem not in (
+                "unresolved",
+                "resolved",
+                "not_applicable",
+            ):
+                raise ValueError("Invalid problem_status")
+            if goal_unresolved(task) and task.get("status") == "completed":
+                raise ValueError("An unresolved original goal cannot be completed")
+            report = task.get("report")
+            if report is not None:
+                if not isinstance(report, dict) or any(
+                    not isinstance(report.get(field), str) or not report[field].strip()
+                    for field in (
+                        "goal",
+                        "work_done",
+                        "result",
+                        "remaining",
+                        "next_step",
+                    )
+                ):
+                    raise ValueError("A report needs all five readable paragraphs")
+            if "phases" in task and not isinstance(task["phases"], list):
+                raise ValueError("phases must be an array")
         return data
 
     def content(self) -> dict:
@@ -148,47 +189,133 @@ class TeamStore:
 
     def allowed_file(self, path: Path) -> bool:
         resolved = path.resolve()
-        return resolved.is_file() and any(
-            resolved.is_relative_to(root) for root in self.roots
+        return resolved.is_file() and (
+            resolved in self.files
+            or any(resolved.is_relative_to(root) for root in self.roots)
         )
+
+    def local_file(self, url):
+        parsed = urlsplit(str(url))
+        if not url or parsed.scheme or str(url).startswith("//"):
+            return None
+        path = Path(url)
+        path = (
+            (self.source.parent / path).resolve()
+            if not path.is_absolute()
+            else path.resolve()
+        )
+        return path if self.allowed_file(path) else None
+
+    def normalize_figures(self, figures):
+        result = []
+        for original in figures if isinstance(figures, list) else []:
+            if not isinstance(original, dict):
+                continue
+            figure = copy.deepcopy(original)
+            figure.update(available=False, embed_safe=False)
+            source_url = str(figure.get("url") or "")
+            path = self.local_file(source_url)
+            figure["source_url"] = source_url
+            figure["url"] = None
+            if figure.get("kind") not in ("image", "html") or path is None:
+                figure["availability_note"] = (
+                    "图形尚未通过明确文件准入，当前不能在网页展示。"
+                )
+                result.append(figure)
+                continue
+            key = hashlib.sha256(str(path).encode()).hexdigest()[:24]
+            name = "main" + path.suffix.lower()
+            bundle, dependencies = {name: path}, []
+            valid = True
+            for asset in figure.get("assets", []):
+                if not isinstance(asset, dict):
+                    valid = False
+                    break
+                url = str(asset.get("url") or "")
+                parsed = urlsplit(url)
+                if (
+                    parsed.scheme == "https"
+                    and parsed.netloc
+                    and not any(ord(c) <= 32 or c in "'\";," for c in url)
+                ):
+                    dependencies.append(url)
+                    continue
+                asset_name = str(asset.get("name") or "")
+                asset_path = self.local_file(url)
+                if (
+                    not asset_name
+                    or asset_name.startswith("/")
+                    or any(part in ("", ".", "..") for part in asset_name.split("/"))
+                    or "\\" in asset_name
+                    or asset_name == name
+                    or asset_path is None
+                ):
+                    valid = False
+                    break
+                bundle[asset_name] = asset_path
+            if valid:
+                self.figures[key] = bundle
+                self.figure_dependencies[key] = dependencies
+                figure.update(
+                    url=f"/figures/{key}/{quote(name)}", available=True, embed_safe=True
+                )
+            else:
+                figure["availability_note"] = (
+                    "必要资产尚未全部明确准入，当前不能完整展示此图。"
+                )
+            result.append(figure)
+        return result
 
     def normalize_evidence(self, data: dict) -> None:
         artifacts = {}
-        for group in ("tasks", "inbox"):
-            for item in data[group]:
-                evidence = []
-                for entry in item.get("evidence", []):
-                    if isinstance(entry, str):
-                        entry = {"label": entry, "url": entry}
-                    if not isinstance(entry, dict):
-                        continue
-                    label = str(entry.get("label", "证据"))
-                    url = str(entry.get("url") or entry.get("path") or "").strip("<>")
-                    parsed = urlsplit(url)
-                    if parsed.scheme in ("http", "https", "t3-thread"):
-                        evidence.append({"label": label, "url": url, "source_url": url})
-                    elif url and not parsed.scheme and not url.startswith("//"):
-                        path = Path(url)
-                        path = (
-                            (self.source.parent / path).resolve()
-                            if not path.is_absolute()
-                            else path.resolve()
+        self.figures, self.figure_dependencies = {}, {}
+        owners = [*data["tasks"], *data["inbox"]]
+        for task in data["tasks"]:
+            if goal_unresolved(task):
+                task.setdefault("problem_status", "unresolved")
+            if isinstance(task.get("report"), dict):
+                owners.append(task["report"])
+                if "figures" not in task["report"] and "figures" in task:
+                    task["report"]["figures"] = task["figures"]
+            owners.extend(
+                phase for phase in task.get("phases", []) if isinstance(phase, dict)
+            )
+        for item in owners:
+            evidence = []
+            for entry in item.get("evidence", []):
+                if isinstance(entry, str):
+                    entry = {"label": entry, "url": entry}
+                if not isinstance(entry, dict):
+                    continue
+                label = str(entry.get("label", "证据"))
+                url = str(entry.get("url") or entry.get("path") or "").strip("<>")
+                parsed = urlsplit(url)
+                if parsed.scheme in ("http", "https", "t3-thread"):
+                    evidence.append({"label": label, "url": url, "source_url": url})
+                elif url and not parsed.scheme and not url.startswith("//"):
+                    path = Path(url)
+                    path = (
+                        (self.source.parent / path).resolve()
+                        if not path.is_absolute()
+                        else path.resolve()
+                    )
+                    if self.allowed_file(path):
+                        key = hashlib.sha256(str(path).encode()).hexdigest()[:24]
+                        artifacts[key] = path
+                        evidence.append(
+                            {
+                                "label": label,
+                                "url": f"/artifacts/{key}",
+                                "source_url": str(path),
+                            }
                         )
-                        if self.allowed_file(path):
-                            key = hashlib.sha256(str(path).encode()).hexdigest()[:24]
-                            artifacts[key] = path
-                            evidence.append(
-                                {
-                                    "label": label,
-                                    "url": f"/artifacts/{key}",
-                                    "source_url": str(path),
-                                }
-                            )
-                        else:
-                            evidence.append({"label": f"{label} · {url}", "url": None})
                     else:
-                        evidence.append({"label": label, "url": None})
-                item["evidence"] = evidence
+                        evidence.append({"label": f"{label} · {url}", "url": None})
+                else:
+                    evidence.append({"label": label, "url": None})
+            item["evidence"] = evidence
+            if "figures" in item:
+                item["figures"] = self.normalize_figures(item["figures"])
         self.artifacts = artifacts
 
     def snapshot(self, *, live=False, revision=0) -> dict:
@@ -450,7 +577,7 @@ def handler_for(app: Portal, public_hosts):
                         "text/html; charset=utf-8",
                         {
                             "Set-Cookie": f"team_portal={app.token}; HttpOnly; SameSite=Strict; Path=/",
-                            "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'",
+                            "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; frame-src 'self'; base-uri 'none'; frame-ancestors 'none'",
                         },
                     )
                 elif path == "/api/state":
@@ -473,6 +600,33 @@ def handler_for(app: Portal, public_hosts):
                         else markdown_views(app.state())[name],
                         "text/plain; charset=utf-8",
                     )
+                elif path.startswith("/figures/"):
+                    app.state()
+                    parts = path.split("/", 3)
+                    key = parts[2] if len(parts) == 4 else ""
+                    name = unquote(parts[3]) if len(parts) == 4 else ""
+                    target = app.store.figures.get(key, {}).get(name)
+                    if target is None or not app.store.allowed_file(target):
+                        self.json(404, {"error": "Unknown figure asset"})
+                    else:
+                        base = "http://" + self.headers["Host"] + f"/figures/{key}/"
+                        sources = " ".join(
+                            [base, *app.store.figure_dependencies.get(key, [])]
+                        )
+                        policy = f"sandbox allow-scripts; default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' blob: {sources}; style-src 'unsafe-inline' {sources}; img-src data: blob: {sources}; connect-src data: blob: {sources}; worker-src blob: {sources}; font-src data: {sources}; frame-ancestors 'self'"
+                        kind = (
+                            mimetypes.guess_type(target.name)[0]
+                            or "application/octet-stream"
+                        )
+                        self.respond(
+                            200,
+                            target.read_bytes(),
+                            kind,
+                            {
+                                "Content-Security-Policy": policy,
+                                "Access-Control-Allow-Origin": "null",
+                            },
+                        )
                 elif path.startswith("/artifacts/"):
                     app.state()
                     target = app.store.artifacts.get(path.rsplit("/", 1)[-1])
@@ -592,6 +746,7 @@ def main():
     parser.add_argument("--port", type=int, default=8841)
     parser.add_argument("--public-host", action="append", default=[])
     parser.add_argument("--artifact-root", type=Path, action="append", default=[])
+    parser.add_argument("--artifact-file", type=Path, action="append", default=[])
     parser.add_argument("--allow-read-writes", action="store_true")
     parser.add_argument("--publish", type=Path)
     parser.add_argument("--mark-id")
@@ -605,7 +760,9 @@ def main():
         "100.64.0.0/10"
     ):
         parser.error("Bind to a loopback or Tailnet IPv4 address")
-    store = TeamStore(args.state, args.artifact_root, args.render_command)
+    store = TeamStore(
+        args.state, args.artifact_root, args.render_command, args.artifact_file
+    )
     if args.publish:
         store.publish(read_json(args.publish))
         print("Canonical content published with existing read state preserved")

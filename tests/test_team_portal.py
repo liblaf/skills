@@ -241,6 +241,109 @@ class PortalBehavior(unittest.TestCase):
         self.assertEqual(status, 403)
         self.assertEqual(self.source.read_bytes(), before)
 
+    def test_unresolved_goal_cannot_be_published_as_completed(self):
+        before = self.source.read_bytes()
+        for indicator in (
+            {"problem_status": "unresolved"},
+            {"scientific_question_resolved": False},
+            {"unresolved": "原问题仍未解决"},
+        ):
+            with self.subTest(indicator=indicator):
+                proposed = copy.deepcopy(self.data)
+                proposed["tasks"][0].update(status="completed", **indicator)
+                with self.assertRaises(ValueError):
+                    self.store.publish(proposed)
+                self.assertEqual(self.source.read_bytes(), before)
+        proposed["tasks"][0].update(problem_status="resolved")
+        self.store.publish(proposed)
+        self.assertEqual(self.store.content()["tasks"][0]["status"], "completed")
+
+    def test_full_report_phases_and_evidence_are_projected_without_mutation(self):
+        evidence = self.root / "phase.md"
+        evidence.write_text("Saved phase outcome")
+        proposed = copy.deepcopy(self.data)
+        proposed["tasks"][0].update(
+            problem_status="unresolved",
+            report={
+                "goal": "本来要解决的问题。",
+                "work_done": "已经完成的工作。",
+                "result": "实际观察到的结果。",
+                "remaining": "原问题仍有缺口。",
+                "next_step": "等待明确的下一步。",
+                "evidence": [{"label": "报告证据", "url": str(evidence)}],
+            },
+            phases=[
+                {
+                    "id": "P1",
+                    "title": "结束的试验",
+                    "status": "completed",
+                    "result": "有明确阶段结果。",
+                    "evidence": [{"label": "阶段证据", "url": str(evidence)}],
+                }
+            ],
+        )
+        self.store.publish(proposed)
+        before = self.source.read_bytes()
+        task = self.store.snapshot()["tasks"][0]
+        self.assertEqual(task["status"], "in_progress")
+        self.assertEqual(task["report"]["remaining"], "原问题仍有缺口。")
+        self.assertEqual(task["phases"][0]["status"], "completed")
+        for location in (task["report"], task["phases"][0]):
+            self.assertEqual(
+                self.request(path=location["evidence"][0]["url"])[1],
+                b"Saved phase outcome",
+            )
+        self.assertEqual(self.source.read_bytes(), before)
+
+    def test_figures_require_exact_files_and_serve_only_declared_assets(self):
+        with tempfile.TemporaryDirectory() as outside:
+            root = Path(outside)
+            html = root / "view.html"
+            html.write_text(
+                '<script src="assets/view.js"></script><div id="result"></div>'
+            )
+            javascript = root / "view.js"
+            javascript.write_text(
+                'document.getElementById("result").textContent="3D fixture";'
+            )
+            secret = root / "private.txt"
+            secret.write_text("Not declared")
+            proposed = copy.deepcopy(self.data)
+            proposed["tasks"][0]["figures"] = [
+                {
+                    "label": "交互视图",
+                    "url": str(html),
+                    "caption": "仅展示保存的结果。",
+                    "kind": "html",
+                    "assets": [{"name": "assets/view.js", "url": str(javascript)}],
+                }
+            ]
+            self.store.publish(proposed)
+            self.assertFalse(
+                self.store.snapshot()["tasks"][0]["figures"][0]["available"]
+            )
+            self.store.files.update((html.resolve(), javascript.resolve()))
+            figure = self.store.snapshot()["tasks"][0]["figures"][0]
+            self.assertTrue(figure["available"])
+            self.assertEqual(self.request(path=figure["url"])[1], html.read_bytes())
+            base = figure["url"].rsplit("/", 1)[0]
+            self.assertEqual(
+                self.request(path=base + "/assets/view.js")[1], javascript.read_bytes()
+            )
+            self.assertEqual(self.request(path=base + "/private.txt")[0], 404)
+            self.assertEqual(self.request(path=base + "/%2e%2e/private.txt")[0], 404)
+            connection = http.client.HTTPConnection(
+                "127.0.0.1", self.server.server_port, timeout=3
+            )
+            connection.request("GET", figure["url"])
+            response = connection.getresponse()
+            policy = response.getheader("Content-Security-Policy")
+            self.assertIn("sandbox allow-scripts", policy)
+            self.assertNotIn("allow-same-origin", policy)
+            self.assertEqual(response.getheader("Access-Control-Allow-Origin"), "null")
+            response.read()
+            connection.close()
+
     def test_atomic_replacement_sends_sse_without_polling(self):
         if not self.app.watcher.available:
             self.skipTest("Linux inotify not available")
