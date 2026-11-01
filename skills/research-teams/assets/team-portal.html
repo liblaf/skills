@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="__CSRF_TOKEN__">
+  <title>团队工作台</title>
+  <style>
+    :root{color-scheme:light;--bg:#f5f3ec;--paper:#fffefa;--ink:#263a33;--muted:#68746c;--line:#dedfd4;--green:#375e4e;--green-soft:#e8eee5;--amber:#85591f;--amber-soft:#f5ecd9;--red:#984c3d;--red-soft:#f7eae4;--shadow:0 8px 28px #29362c05}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif}button,a{touch-action:manipulation}button{font:inherit;cursor:pointer}button:disabled{cursor:wait;opacity:.55}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #ad764b;outline-offset:4px}a{color:var(--green);text-underline-offset:4px;overflow-wrap:anywhere}h1,h2,h3,p{margin:0}button{color:inherit}h1{font-size:clamp(25px,3vw,36px);font-weight:650;line-height:1.35;letter-spacing:-.025em}h2{font-size:22px;font-weight:650}h3{font-size:17px;font-weight:650;line-height:1.6}[hidden]{display:none!important}
+    .shell{max-width:1392px;margin:auto;padding:40px 44px 24px}.eyebrow{font-size:12px;font-weight:650;letter-spacing:.15em;color:var(--muted);margin-bottom:10px}.masthead{display:flex;align-items:flex-start;justify-content:space-between;gap:28px}.subtitle{color:var(--muted);margin-top:10px;max-width:780px}.connection{min-width:260px;text-align:right;padding-top:5px}.connection-top{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}.connection-label{font-size:13px;font-weight:600}.connection-label:before{content:"";display:inline-block;width:7px;height:7px;margin-right:8px;border-radius:50%;background:#899389}.connection-label[data-kind="live"]:before{background:var(--green)}.connection-label[data-kind="error"]:before{background:var(--red)}.connection-detail{color:var(--muted);font-size:12px;margin-top:8px;max-width:340px;margin-left:auto}.button{border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:7px 14px;font-size:13px;font-weight:600;white-space:nowrap}.button:hover:not(:disabled){border-color:var(--green);background:#f0f3eb}.button.primary{background:var(--green);color:white;border-color:var(--green)}.button.primary:hover:not(:disabled){background:#294b3d}.notice{border:1px solid #dbc4a0;background:var(--amber-soft);color:#67471e;padding:12px 16px;border-radius:7px;margin-top:22px;white-space:pre-wrap}.notice.error{background:var(--red-soft);border-color:#e2c0b5;color:#833e31}.tabs{display:flex;gap:30px;margin-top:32px;border-bottom:1px solid #cdd2c5}.tab{background:none;border:0;border-bottom:3px solid transparent;border-radius:0;padding:12px 2px 14px;display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;margin-bottom:-1px;color:var(--muted)}.tab[aria-selected="true"]{border-bottom-color:var(--green);color:var(--ink)}.tab-count{font-size:12px;min-width:23px;text-align:center;border:1px solid var(--line);border-radius:4px;line-height:1.65;padding:0 5px;font-variant-numeric:tabular-nums}.tab[aria-selected="true"] .tab-count{background:var(--green-soft);border-color:#cbd5c5}
+    .overview{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--line);margin:27px 0 31px;box-shadow:var(--shadow)}.metric{background:var(--paper);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}.metric-label{font-size:13px;color:var(--muted)}.metric-value{font-size:28px;font-weight:600;line-height:1.3;font-variant-numeric:tabular-nums}.metric.accent .metric-value{color:var(--amber)}.section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:19px}.section-heading p{color:var(--muted);font-size:13px;margin-top:4px}.source-stamp{font-size:12px;color:var(--muted);text-align:right;max-width:450px}.source-stamp span{display:block}.task-list{display:grid;gap:14px}.task{border:1px solid var(--line);border-radius:9px;background:var(--paper);box-shadow:var(--shadow);padding:21px 24px}.task-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.task-heading{display:flex;align-items:baseline;gap:13px}.task-id{color:var(--muted);font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;flex-shrink:0}.badge{display:inline-block;font-size:12px;font-weight:600;line-height:1.65;padding:3px 8px;border:1px solid #d7dbd0;border-radius:4px;background:#f2f3ed;color:#5e6b60;white-space:nowrap}.badge.active,.badge.read{background:var(--green-soft);border-color:#d0dccb;color:var(--green)}.badge.done{background:#eff1eb;color:#53624e}.badge.pending{background:#f5f1e8;color:#7d6b48}.badge.unread{background:var(--amber-soft);color:var(--amber);border-color:#e3d6ba}.badge.issue{background:var(--red-soft);border-color:#e4c9bc;color:var(--red)}.question{color:var(--muted);margin:8px 0 0 0;white-space:pre-wrap;overflow-wrap:anywhere}.task-grid{display:grid;grid-template-columns:.8fr 1.15fr 1.7fr;column-gap:30px;row-gap:18px;margin:19px 0 0}.field dt{font-size:12px;color:var(--muted);margin-bottom:4px}.field dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.field.blocker dd{color:var(--red)}.acceptance{grid-column:2 / 4}.evidence{border-top:1px solid var(--line);margin-top:20px;padding-top:13px}.evidence summary{font-size:13px;color:var(--green);cursor:pointer;width:fit-content}.evidence-list{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:7px}.evidence-list li{font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.evidence-time{font-size:12px;color:var(--muted);margin-top:10px}.empty{border:1px dashed #cbd1c2;background:#fcfcf6;border-radius:9px;padding:52px 24px;text-align:center}.empty h3{font-size:18px}.empty p{color:var(--muted);margin-top:8px;font-size:14px}.filters{display:flex;gap:6px;flex-wrap:wrap}.filter{border:1px solid transparent;padding:6px 13px;border-radius:5px;background:transparent;font-size:13px;color:var(--muted)}.filter[aria-pressed="true"]{background:var(--paper);border-color:var(--line);color:var(--ink);font-weight:600}.mail-layout{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(0,1.8fr);gap:21px;align-items:start}.mail-list{display:grid;gap:9px}.mail-card{display:block;text-align:left;width:100%;border:1px solid var(--line);border-radius:7px;background:var(--paper);padding:17px 18px}.mail-card:hover{border-color:#a9b8a1}.mail-card[aria-current="true"]{border-color:var(--green);box-shadow:inset 3px 0 var(--green);background:#f7faf3}.mail-card-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted)}.mail-card h3{font-size:15px}.mail-card p{font-size:13px;color:var(--muted);margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.mail-card .decision-preview{color:var(--amber);-webkit-line-clamp:2}.mail-card time{font-size:11px;color:var(--muted);display:block;margin-top:12px}.reader{border:1px solid var(--line);border-radius:9px;background:var(--paper);box-shadow:var(--shadow);padding:29px 31px;min-height:390px}.reader-top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:15px}.reader-badges{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.reader h2{font-size:24px;line-height:1.5}.mail-byline{color:var(--muted);font-size:12px;margin-top:10px;display:flex;gap:6px 18px;flex-wrap:wrap}.mail-block{margin-top:24px}.mail-block h3{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:7px}.mail-block p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9}.decision{border-left:3px solid #b38547;background:#faf5e9;padding:15px 18px;margin-top:23px}.decision h3{color:var(--amber);font-size:13px;margin-bottom:6px}.decision p{white-space:pre-wrap;overflow-wrap:anywhere}.read-control{border-top:1px solid var(--line);margin-top:28px;padding-top:19px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}.read-note{width:100%;font-size:12px;color:var(--muted);margin-top:1px}.footer{display:flex;justify-content:space-between;gap:20px;border-top:1px solid var(--line);padding:19px 0 0;margin-top:34px;color:var(--muted);font-size:12px}.footer p{max-width:900px}.loading{padding:50px 0;color:var(--muted)}
+    @media(min-width:1500px){.shell{padding-top:48px}}@media(max-width:1000px){.shell{padding:28px 26px 22px}.metric{padding:17px 19px}.task-grid{column-gap:20px;grid-template-columns:.8fr 1.1fr 1.5fr}.connection{min-width:220px}.mail-layout{grid-template-columns:minmax(250px,.85fr) minmax(0,1.5fr)}.reader{padding:23px}.connection-detail{max-width:260px}}
+    @media(max-width:740px){.shell{padding:25px 18px 20px}.masthead{display:block}.connection{text-align:left;padding-top:20px;min-width:0}.connection-top{justify-content:flex-start}.connection-detail{margin-left:0;max-width:none}.subtitle{font-size:13px}.tabs{margin-top:22px}.overview{grid-template-columns:repeat(2,1fr);margin:20px 0 26px}.metric{padding:14px 17px}.metric-value{font-size:25px}.section-heading{align-items:flex-start;flex-direction:column;gap:10px}.source-stamp{text-align:left}.task{padding:18px}.task-heading{display:block}.task-id{display:block;margin-bottom:3px}.task-grid{grid-template-columns:1fr 1fr;gap:15px 20px}.field.next,.acceptance{grid-column:1 / -1}.task-grid .field.blocker{grid-column:1 / -1}.task-top{gap:12px}.mail-layout{grid-template-columns:1fr}.mail-list{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.reader{padding:22px 19px;min-height:0}.reader h2{font-size:21px}.footer{display:block}.footer p+p{margin-top:6px}.notice{font-size:13px}.filters{gap:3px}.filter{padding:6px 12px}}
+    @media(prefers-reduced-motion:no-preference){button,a{transition:background-color .12s,border-color .12s}}
+    .task-detail{margin-top:16px}.task-detail>summary{font-size:13px;color:var(--green);cursor:pointer}.task-detail[open]>summary{padding-bottom:3px}
+    @media print{body{background:white}.shell{padding:0}.connection button,.tabs,.filters,.read-control button{display:none}.overview,.task,.reader{box-shadow:none;break-inside:avoid}.mail-layout{grid-template-columns:1fr}.mail-list{display:none}.footer{margin-top:20px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div><p class="eyebrow">团队协作 · 共享进展</p><h1 id="team-title">团队工作台</h1><p class="subtitle">查看任务、核对证据，让需要人参与的决定有清楚的去处。</p></div>
+      <div class="connection"><div class="connection-top"><span id="connection-label" class="connection-label" role="status">正在载入</span><button id="refresh" class="button" type="button">刷新 / 重连</button></div><p id="connection-detail" class="connection-detail">页面保留来源时间，阅读状态由访问者手动标记。</p></div>
+    </header>
+    <div id="preview-notice" class="notice" hidden>静态预览，操作请打开共享网页。</div>
+    <div id="error-notice" class="notice error" role="alert" hidden></div>
+    <div id="source-notice" class="notice" role="status" hidden></div>
+    <nav class="tabs" role="tablist" aria-label="工作台内容">
+      <button id="tasks-tab" class="tab" type="button" role="tab" aria-selected="true" aria-controls="tasks-panel" tabindex="0">任务 <span id="tasks-count" class="tab-count">—</span></button>
+      <button id="inbox-tab" class="tab" type="button" role="tab" aria-selected="false" aria-controls="inbox-panel" tabindex="-1">收件箱 <span id="inbox-count" class="tab-count">—</span></button>
+    </nav>
+    <section class="overview" aria-label="团队概况">
+      <div class="metric"><span class="metric-label">已完成 / 全部任务</span><span id="metric-completed" class="metric-value">—</span></div>
+      <div class="metric"><span class="metric-label">进行中</span><span id="metric-active" class="metric-value">—</span></div>
+      <div class="metric accent"><span class="metric-label">存在阻碍</span><span id="metric-blocked" class="metric-value">—</span></div>
+      <div class="metric accent"><span class="metric-label">未读消息</span><span id="metric-unread" class="metric-value">—</span></div>
+    </section>
+    <main>
+      <section id="tasks-panel" role="tabpanel" aria-labelledby="tasks-tab">
+        <div class="section-heading"><div><h2>任务列表</h2><p>责任、当前执行情况与下一步。</p></div><div class="source-stamp"><span id="updated-at">来源更新时间：尚未载入</span><span id="evidence-checked-at">证据核对时间：尚未载入</span></div></div>
+        <div id="task-list" class="task-list"><p class="loading">正在载入任务…</p></div>
+      </section>
+      <section id="inbox-panel" role="tabpanel" aria-labelledby="inbox-tab" hidden>
+        <div class="section-heading"><div><h2>人的收件箱</h2><p>先看影响与所需决定，再查看证据。打开消息不会改变已读状态。</p></div><div class="filters" role="group" aria-label="筛选阅读状态"><button class="filter" type="button" data-filter="all" aria-pressed="true">全部</button><button class="filter" type="button" data-filter="unread" aria-pressed="false">未读</button><button class="filter" type="button" data-filter="read" aria-pressed="false">已读</button></div></div>
+        <div class="mail-layout"><div id="mail-list" class="mail-list" aria-label="消息列表"></div><div id="mail-reader"></div></div>
+      </section>
+    </main>
+    <footer class="footer"><p>“已读”由访问者手动标记，是所有访问者共享的阅读状态；不代表身份确认、批准或任务验收。</p><p id="receipts-at">阅读状态更新时间：尚未载入</p></footer>
+  </div>
+  <script>
+    'use strict';
+    (() => {
+      const byId = id => document.getElementById(id);
+      const preview = Object.prototype.hasOwnProperty.call(window, 'TEAM_PORTAL_SNAPSHOT');
+      const statusNames = {pending:'待开始',in_progress:'进行中',completed:'已完成'};
+      let state = null, stream = null, activeTab = 'tasks', filter = 'all', selectedId = null, loading = false;
+      const pending = new Set(), expanded = new Set();
+      function readable(value, fallback = '未提供') {
+        if (value === null || value === undefined || value === '') return fallback;
+        if (Array.isArray(value)) return value.length ? value.map(item => readable(item, '—')).join('\n') : fallback;
+        if (typeof value === 'object') {
+          const entries = Object.entries(value);
+          return entries.length ? entries.map(([key,val]) => key + '：' + readable(val, '—')).join('\n') : fallback;
+        }
+        return String(value);
+      }
+      function el(tag, className, content) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (content !== undefined) node.textContent = content;
+        return node;
+      }
+      function stamp(value) {
+        if (value === null || value === undefined || value === '') return '未提供';
+        const raw = readable(value), date = new Date(raw);
+        return Number.isNaN(date.getTime()) ? raw : date.toLocaleString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short',hour12:false});
+      }
+      function setTime(id, prefix, value) { const node = byId(id); node.textContent = prefix + stamp(value); node.title = readable(value, '未提供'); }
+      function badge(text, kind) { return el('span','badge ' + (kind || ''),text); }
+      function empty(title, text) { const node = el('div','empty'); node.append(el('h3','',title),el('p','',text)); return node; }
+      function connection(text, kind, detail) {
+        byId('connection-label').textContent = text;
+        byId('connection-label').dataset.kind = kind || '';
+        byId('connection-detail').textContent = detail;
+      }
+      function showError(message) { byId('error-notice').textContent = message; byId('error-notice').hidden = !message; }
+      function safeUrl(raw) {
+        if (typeof raw !== 'string') return null;
+        try {
+          if (raw.startsWith('/artifacts/')) {
+            const url = new URL(raw, location.origin);
+            return url.origin === location.origin && url.pathname.startsWith('/artifacts/') ? url.href : null;
+          }
+          const url = new URL(raw);
+          return ['http:', 'https:', 't3-thread:'].includes(url.protocol) ? url.href : null;
+        } catch (_) { return null; }
+      }
+      function evidenceList(value) {
+        const items = Array.isArray(value) ? value : (value ? [value] : []);
+        const list = el('ul','evidence-list');
+        if (!items.length) list.append(el('li','', '尚未提供证据。'));
+        for (const item of items) {
+          const row = el('li');
+          const raw = item && typeof item === 'object' ? item.url : item;
+          const label = item && typeof item === 'object' ? readable(item.label, readable(raw)) : readable(item);
+          const url = safeUrl(raw);
+          if (url) { const link = el('a','',label); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; row.append(link); }
+          else row.textContent = label + (raw && readable(raw) !== label ? ' · ' + readable(raw) : '');
+          list.append(row);
+        }
+        return list;
+      }
+      function field(label, value, className, fallback) {
+        const node = el('div','field ' + (className || ''));
+        node.append(el('dt','',label),el('dd','',readable(value,fallback)));
+        return node;
+      }
+      function renderTasks(tasks) {
+        const list = byId('task-list'); list.replaceChildren();
+        if (!tasks.length) { list.append(empty('暂无任务','团队任务将在这里显示。')); return; }
+        tasks.forEach(task => {
+          const card = el('article','task'), top = el('div','task-top'), heading = el('div','task-heading');
+          heading.append(el('span','task-id',readable(task.id,'—')),el('h3','',readable(task.title,'未命名任务')));
+          top.append(heading,badge(statusNames[task.status] || readable(task.status),'in_progress' === task.status ? 'active' : task.status === 'completed' ? 'done' : 'pending'));
+          card.append(top);
+          if (task.question) card.append(el('p','question',readable(task.question)));
+          if (task.unresolved) card.append(el('p','question','仍未解决：' + readable(task.unresolved)));
+          const detail = el('details','task-detail');
+          detail.open = task.status !== 'completed';
+          detail.append(el('summary','',task.status === 'completed' ? '查看本轮交付与验收' : '当前责任与推进条件'));
+          const grid = el('dl','task-grid');
+          const executionNames = {closed:'本轮已结束',closed_gate_failed:'已按门槛停止',blocked_human_license:'等待人类账号或许可'};
+          grid.append(field('负责人',task.owner === 'lead' ? 'team lead' : task.owner),field('执行情况',executionNames[task.execution_state] || task.execution_state),field('下一步',task.next_action,'next'),field('当前阻碍',task.blocker,task.blocker ? 'blocker' : '', '未报告阻碍'),field('验收标准',task.acceptance,'acceptance'));
+          if (task.completed_delivery) grid.append(field('本轮已交付',task.completed_delivery,'acceptance'));
+          if (task.unresolved) grid.append(field('仍未解决',task.unresolved,'acceptance'));
+          if (task.budget && task.budget.remaining_dispatch !== undefined) grid.append(field('后续计算额度',task.budget.remaining_dispatch));
+          detail.append(grid);
+          const details = el('details','evidence'); details.open = expanded.has(String(task.id));
+          const count = Array.isArray(task.evidence) ? task.evidence.length : task.evidence ? 1 : 0;
+          details.append(el('summary','', '证据与记录（' + count + '）'),evidenceList(task.evidence));
+          if (task.evidence_checked_at) { const time = el('p','evidence-time','证据核对：' + stamp(task.evidence_checked_at)); time.title = readable(task.evidence_checked_at); details.append(time); }
+          details.addEventListener('toggle', () => details.open ? expanded.add(String(task.id)) : expanded.delete(String(task.id)));
+          detail.append(details); card.append(detail); list.append(card);
+        });
+      }
+      function block(label, value) { const node = el('section','mail-block'); node.append(el('h3','',label),el('p','',readable(value))); return node; }
+      function renderInbox() {
+        if (!state) return;
+        const inbox = state.inbox;
+        document.querySelectorAll('[data-filter]').forEach(button => { const key = button.dataset.filter; const count = inbox.filter(message => key === 'all' || message.read_status === key).length; button.textContent = ({all:'全部',unread:'未读',read:'已读'})[key] + ' ' + count; button.setAttribute('aria-pressed',String(filter === key)); });
+        const messages = inbox.filter(message => filter === 'all' || message.read_status === filter);
+        if (!messages.some(message => String(message.id) === selectedId)) selectedId = messages.length ? String(messages[0].id) : null;
+        const list = byId('mail-list'), reader = byId('mail-reader'); list.replaceChildren(); reader.replaceChildren();
+        if (!messages.length) { list.append(empty(filter === 'all' ? '暂无消息' : filter === 'unread' ? '暂无未读消息' : '暂无已读消息','消息会保留明确的发送时间与证据。')); reader.hidden = true; return; }
+        reader.hidden = false;
+        messages.forEach(message => {
+          const card = el('button','mail-card'); card.type = 'button'; card.setAttribute('aria-current',String(String(message.id) === selectedId));
+          const meta = el('div','mail-card-meta'); meta.append(el('span','',readable(message.from,'来源未提供')),badge(message.read_status === 'read' ? '已读' : '未读',message.read_status === 'read' ? 'read' : 'unread'));
+          card.append(meta,el('h3','',readable(message.title,'未命名消息')),el('p','',readable(message.significance,readable(message.summary))));
+          if (message.decision_needed) card.append(el('p','decision-preview','待决定：' + readable(message.decision_needed)));
+          const time = el('time','',stamp(message.created_at)); time.title = readable(message.created_at); card.append(time);
+          card.addEventListener('click', () => { selectedId = String(message.id); renderInbox(); }); list.append(card);
+        });
+        const message = messages.find(item => String(item.id) === selectedId), article = el('article','reader');
+        const top = el('div','reader-top'), badges = el('div','reader-badges');
+        badges.append(badge(message.read_status === 'read' ? '共享状态：已读' : '共享状态：未读',message.read_status === 'read' ? 'read' : 'unread'));
+        if (message.delivery_status) badges.append(badge('投递：' + readable(message.delivery_status)));
+        top.append(badges); article.append(top,el('h2','',readable(message.title,'未命名消息')));
+        const byline = el('div','mail-byline'); byline.append(el('span','', '来自 ' + readable(message.from,'未提供')),el('span','', '发送于 ' + stamp(message.created_at))); article.append(byline);
+        article.append(block('这件事的影响',message.significance));
+        if (message.decision_needed) { const decision = el('section','decision'); decision.append(el('h3','', '需要你决定'),el('p','',readable(message.decision_needed))); article.append(decision); }
+        article.append(block('内容摘要',message.summary));
+        const evidence = el('section','mail-block'); evidence.append(el('h3','', '证据与附件'),evidenceList(message.evidence)); article.append(evidence);
+        const controls = el('div','read-control');
+        [true,false].forEach(read => {
+          const button = el('button','button ' + (read && message.read_status !== 'read' ? 'primary' : ''),read ? '标为已读' : '标为未读'); button.type = 'button';
+          button.disabled = preview || !state._portal?.writable || pending.has(String(message.id)) || (message.read_status === (read ? 'read' : 'unread'));
+          if (pending.has(String(message.id))) button.textContent = '正在保存…';
+          button.addEventListener('click', () => changeRead(String(message.id), read)); controls.append(button);
+        });
+        controls.append(el('p','read-note',preview ? '静态预览，操作请打开共享网页。' : !state._portal?.writable ? '当前为只读视图；需数据 owner 明确受理回写权限后启用按钮。' : '只有点击按钮才会改变共享阅读状态。已读不代表批准。'));
+        if (message.read_changed_at) { const note = el('p','read-note','阅读状态变更于 ' + stamp(message.read_changed_at)); note.title = readable(message.read_changed_at); controls.append(note); }
+        article.append(controls); reader.append(article);
+      }
+      function applyState(snapshot) {
+        if (!snapshot || snapshot.schema_version !== 1 || !Array.isArray(snapshot.tasks) || !Array.isArray(snapshot.inbox)) throw new Error('数据格式不正确，无法展示最新状态。');
+        if (state && snapshot.team_id === state.team_id && snapshot._portal?.instance_id === state._portal?.instance_id && typeof snapshot._portal?.revision === 'number' && typeof state._portal?.revision === 'number' && snapshot._portal.revision < state._portal.revision) return;
+        state = snapshot;
+        if (state._portal?.csrf_token) document.querySelector('meta[name="csrf-token"]').content = state._portal.csrf_token;
+        byId('team-title').textContent = readable(state.title,'团队工作台'); document.title = readable(state.title,'团队工作台') + ' · 团队工作台';
+        const tasks = state.tasks, unread = state.inbox.filter(item => item.read_status !== 'read').length;
+        byId('tasks-count').textContent = String(tasks.length); byId('inbox-count').textContent = String(unread);
+        byId('inbox-count').setAttribute('aria-label',unread + ' 条未读消息');
+        byId('metric-completed').textContent = tasks.filter(item => item.status === 'completed').length + ' / ' + tasks.length;
+        byId('metric-active').textContent = String(tasks.filter(item => item.status === 'in_progress').length);
+        byId('metric-blocked').textContent = String(tasks.filter(item => item.blocker && readable(item.blocker,'').trim()).length);
+        byId('metric-unread').textContent = String(unread);
+        setTime('updated-at','来源更新时间：',state.updated_at); setTime('evidence-checked-at','证据核对时间：',state.evidence_checked_at); setTime('receipts-at','阅读状态更新时间：',state._portal?.receipts_updated_at);
+        const sourceError = state._portal?.error;
+        byId('source-notice').textContent = sourceError ? '来源状态异常，当前展示保留的快照：' + readable(sourceError) : '';
+        byId('source-notice').hidden = !sourceError;
+        renderTasks(tasks); renderInbox();
+      }
+      function closeStream() { if (stream) { stream.close(); stream = null; } }
+      function connect() {
+        closeStream();
+        if (preview) return;
+        if (!state?._portal?.live_updates) { connection('手动刷新','', '此页面未启用实时推送；点击“刷新 / 重连”获取最新状态。'); return; }
+        if (!window.EventSource) { connection('实时连接不可用','error', '浏览器不支持实时推送；点击“刷新 / 重连”获取最新状态。'); return; }
+        connection('正在连接','', '当前快照已载入，正在连接实时更新。');
+        const source = new EventSource('/api/events'); stream = source;
+        source.onopen = () => { if (stream === source) connection('实时连接已建立','live','接收服务端推送；来源时间见任务列表，连接状态不代表证据已重新核对。'); };
+        source.addEventListener('state', event => {
+          if (stream !== source) return;
+          try {
+            applyState(JSON.parse(event.data));
+            if (!state._portal?.live_updates) { closeStream(); connection('手动刷新','','此页面未启用实时推送；点击“刷新 / 重连”获取最新状态。'); }
+          } catch (_) { source.close(); if (stream === source) stream = null; connection('连接已停止','error','收到的数据无法解析，保留当前内容。请点击“刷新 / 重连”。'); }
+        });
+        source.onerror = () => { source.close(); if (stream !== source) return; stream = null; connection('连接已断开','error','当前内容可能已过时。点击“刷新 / 重连”获取最新状态并重新连接。'); };
+      }
+      async function responseState(response) {
+        if (!response.ok) throw new Error('请求未成功（' + response.status + '）。');
+        return await response.json();
+      }
+      async function refresh() {
+        if (preview || loading) return;
+        loading = true; byId('refresh').disabled = true; closeStream(); showError('');
+        connection('正在刷新','','正在读取来源快照。');
+        try { const response = await fetch('/api/state',{credentials:'same-origin',cache:'no-store',headers:{Accept:'application/json'}}); applyState(await responseState(response)); connect(); }
+        catch (error) { connection('无法获取最新状态','error',state ? '当前内容可能已过时。请点击“刷新 / 重连”。' : '尚未获取团队数据。请点击“刷新 / 重连”。'); showError('刷新失败：' + (error instanceof Error ? error.message : '连接异常。')); if (!state) byId('task-list').replaceChildren(empty('暂时无法载入','请检查连接后手动刷新。')); }
+        finally { loading = false; byId('refresh').disabled = false; }
+      }
+      async function changeRead(id, read) {
+        if (preview || !state._portal?.writable || pending.has(id)) return;
+        pending.add(id); showError(''); renderInbox();
+        try {
+          const token = document.querySelector('meta[name="csrf-token"]').content;
+          const response = await fetch('/api/read-state',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json',Accept:'application/json','X-CSRF-Token':token},body:JSON.stringify({id,read})});
+          applyState(await responseState(response));
+        } catch (error) { showError('阅读状态保存失败，页面保留服务端已确认的状态：' + (error instanceof Error ? error.message : '连接异常。')); }
+        finally { pending.delete(id); renderInbox(); }
+      }
+      function selectTab(name, focus = false) {
+        activeTab = name;
+        ['tasks','inbox'].forEach(key => { const button = byId(key + '-tab'); button.setAttribute('aria-selected',String(key === name)); button.tabIndex = key === name ? 0 : -1; byId(key + '-panel').hidden = key !== name; });
+        if (focus) byId(name + '-tab').focus();
+      }
+      ['tasks','inbox'].forEach(key => { const button = byId(key + '-tab'); button.addEventListener('click', () => selectTab(key)); button.addEventListener('keydown',event => { if (['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) { event.preventDefault(); selectTab(event.key === 'Home' ? 'tasks' : event.key === 'End' ? 'inbox' : activeTab === 'tasks' ? 'inbox' : 'tasks',true); } }); });
+      document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; renderInbox(); }));
+      byId('refresh').addEventListener('click',refresh);
+      window.addEventListener('pagehide',closeStream);
+      if (preview) {
+        byId('preview-notice').hidden = false; byId('refresh').disabled = true;
+        connection('静态预览','','展示嵌入的来源快照；操作请打开共享网页。');
+        try { applyState(window.TEAM_PORTAL_SNAPSHOT); } catch (error) { showError(error instanceof Error ? error.message : '预览数据无法读取。'); }
+      } else refresh();
+    })();
+  </script>
+</body>
+</html>

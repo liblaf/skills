@@ -64,8 +64,13 @@ Monitor through completion events or supported blocking waits. Do not repeatedly
 
 - Publish a stable, direct human-inbox link beside the Task List and verify that both links open the intended views. Keep important results and decisions available for asynchronous reading; do not mirror every internal message.
 - Give each entry a stable ID scoped to its team, timestamp, sender, understandable summary, significance, any requested decision, and evidence links. Track delivery separately from `unread` or `read`; new entries start `unread`.
+- Keep message IDs immutable. Publish a substantive follow-up as a new entry so earlier read marks cannot hide new information.
 - Mark an entry `read` only on explicit human instruction or a verified host event identifying that human and item. Sending a report, opening it with an agent tool, or another agent reading it does not establish human reading. Support restoring `unread` on request.
 - Without host read receipts, accept instructions such as "mark phace:H-3 read" or "mark phace:H-3 unread". Assistants relay the exact instruction to the record owner. Reading does not approve a proposal, authorize work, or require the team to wait for acknowledgement.
+
+### Shared webpage
+
+When the human requests a private shared webpage, read [the team portal guide](references/team-portal.md). The bundled helper serves the same canonical data, provides explicit read/unread buttons, and pushes file-change events without polling. Obtain the data owner's field-level write handoff before enabling buttons. Shared visitor marks do not establish a verified person's identity. Keep peer messaging and agent resumption separate from the webpage.
 
 ## Human communication
 
