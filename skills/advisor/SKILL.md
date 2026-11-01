@@ -1,34 +1,25 @@
 ---
 name: advisor
 description: |-
-  Consult a higher-intelligence advisor model for strategic guidance.
-
-  Use BEFORE substantive work — before writing, before committing to an interpretation, before building on an assumption. If the task requires orientation first (finding files, fetching a source, seeing what's there), do that, then call advisor. Orientation is not substantive work. Writing, editing, and declaring an answer are.
-
-  Also call advisor:
-  - When you believe the task is complete. BEFORE this call, make your deliverable durable: write the file, save the result, commit the change. The advisor call takes time; if the session ends during it, a durable result persists and an unwritten one doesn't.
-  - When stuck — errors recurring, approach not converging, results that don't fit.
-  - When considering a change of approach.
+  Consult a stronger model for important decisions, difficult tasks, before substantive work or long computation, and when stuck.
 ---
 
 <!-- ref: <https://code.claude.com/docs/en/advisor> -->
 <!-- ref: <https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool> -->
 <!-- ref: <https://www.skills.sh/cursor/plugins/advisor> -->
 
-Call advisor BEFORE substantive work — before writing, before committing to an interpretation, before building on an assumption. If the task requires orientation first (finding files, fetching a source, seeing what's there), do that, then call advisor. Orientation is not substantive work. Writing, editing, and declaring an answer are.
+## When to consult
 
-Also call advisor:
+Consult after orientation and before substantive work, an important decision, a difficult task, or long computation. Substantive work includes choosing a method or interpretation and designing an implementation. Cover related decisions and compute plans in one consultation.
 
-- When you believe the task is complete. BEFORE this call, make your deliverable durable: write the file, save the result, commit the change. The advisor call takes time; if the session ends during it, a durable result persists and an unwritten one doesn't.
-- When stuck — errors recurring, approach not converging, results that don't fit.
-- When considering a change of approach.
+Reuse advice while its evidence and assumptions remain valid, including in delegated work. Consult again for a new consequential decision, material counterevidence, or when stuck: recurring errors, a nonconverging approach, or unexplained results. Routine edits, checks, status messages, and task completion do not each require another consultation. A final review is useful when remaining uncertainty warrants it or the human requests it.
 
-On tasks longer than a few steps, call advisor at least once before committing to an approach and once before declaring done. On short reactive tasks where the next action is dictated by tool output you just read, you don't need to keep calling — the advisor adds most of its value on the first call, before the approach crystallizes.
+## Consultation
 
-Give the advice serious weight. If you follow a step and it fails empirically, or you have primary-source evidence that contradicts a specific claim (the file says X, the paper states Y), adapt. A passing self-test is not evidence the advice is wrong — it's evidence your test doesn't check what the advice is checking.
+- Choose an available stronger model and reasoning effort using the human's preferences and model table. Name the advisor agent `advisor · [topic]`; use a valid internal identifier when the runtime fixes its name.
+- Send a self-contained decision brief: goal, constraints, decisive evidence and counterevidence, attempted approaches, options, and the question to resolve. Include existing advice that still applies.
+- Request a concise recommendation, its reasons, and the next discriminating check. The advisor is read-only and does not invoke further advisors.
+- Weigh the advice against primary sources and observed behavior. Resolve material disagreements with a focused follow-up when needed. A passing check only establishes what that check actually covers.
+- The caller retains execution, integration, and acceptance responsibility. Consultation does not transfer ownership or enlarge scope, permissions, or budget.
 
-If you've already retrieved data pointing one way and the advisor points another: don't silently switch. Surface the conflict in one more advisor call — "I found X, you suggest Y, which constraint breaks the tie?" The advisor saw your evidence but may have underweighted it; a reconcile call is cheaper than committing to the wrong branch.
-
-## Guardrails
-
-- The advisor is read-only. Never ask it to edit files or do the task.
+Preserve the current checkpoint within the authorized scope before a slow consultation. For a read-only task, keep the evidence and draft in the conversation; consultation itself does not require a file, commit, or publication.
