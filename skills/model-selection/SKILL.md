@@ -30,16 +30,15 @@ Balance cost and intelligence. The most capable model can be too expensive at sc
 | Gemini 4 Hydrogen (High)   | 51                                     | $1.87               |
 | Gemini 4 Hydrogen (Medium) | 41                                     | $0.80               |
 
-| Model                  | Artificial Analysis Intelligence Index | Cost per Task (USD) |
-| ---------------------- | -------------------------------------- | ------------------- |
-| GPT-6 Astra (Max)      | 57                                     | $6.24               |
-| GPT-6.1 Sol (Max)      | 55                                     | $1.27               |
-| GPT-6.1 Sol (Xhigh)    | 52                                     | $0.76               |
-| GPT-6.1 Sol (High)     | 50                                     | $0.59               |
-| GPT-6.1 Sol (Medium)   | 46                                     | $0.36               |
-| GPT-6.1 Terra (Xhigh)  | 45                                     | $0.40               |
-| GPT-6.1 Terra (High)   | 42                                     | $0.26               |
-| GPT-6.1 Terra (Medium) | 38                                     | $0.17               |
+| Model                 | Artificial Analysis Intelligence Index | Cost per Task (USD) |
+| --------------------- | -------------------------------------- | ------------------- |
+| GPT-6.2 Astra (Xhigh) | 62                                     | $2.52               |
+| GPT-6.2 Astra (High)  | 60                                     | $2.07               |
+| GPT-6.2 Sol (Max)     | 57                                     | $1.01               |
+| GPT-6.2 Sol (Xhigh)   | 56                                     | --                  |
+| GPT-6.2 Sol (High)    | 55                                     | --                  |
+| GPT-6.2 Sol (Medium)  | 53                                     | --                  |
+| GPT-6.2 Sol (Low)     | 41                                     | --                  |
 
 ## Providers
 
