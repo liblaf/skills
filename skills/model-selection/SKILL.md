@@ -35,10 +35,10 @@ Balance cost and intelligence. The most capable model can be too expensive at sc
 | GPT-6.2 Astra (Xhigh) | 62                                     | $2.52               |
 | GPT-6.2 Astra (High)  | 60                                     | $2.07               |
 | GPT-6.2 Sol (Max)     | 57                                     | $1.01               |
-| GPT-6.2 Sol (Xhigh)   | 56                                     | --                  |
-| GPT-6.2 Sol (High)    | 55                                     | --                  |
-| GPT-6.2 Sol (Medium)  | 53                                     | --                  |
-| GPT-6.2 Sol (Low)     | 41                                     | --                  |
+| GPT-6.2 Sol (Xhigh)   | 56                                     | $0.65               |
+| GPT-6.2 Sol (High)    | 55                                     | $0.56               |
+| GPT-6.2 Sol (Medium)  | 53                                     | $0.41               |
+| GPT-6.2 Sol (Low)     | 41                                     | $0.18               |
 
 ## Providers
 
